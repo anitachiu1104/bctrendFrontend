@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkinflowWeb=self.webpackChunkinflowWeb||[]).push([[484],{997:(e,n,t)=>{var l=t(294);const r=function(){return l.createElement("div",{id:"page1"},"我是PAGE1，Hello World")};t(935).render(l.createElement(r,null),document.getElementById("root"))}},e=>{e(e.s=997)}]);
