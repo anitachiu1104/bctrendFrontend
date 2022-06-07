@@ -1,0 +1,217 @@
+
+.home {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  .cont {
+      width: 100%;
+      max-width: 1920px;
+  }
+  .mainCont {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      background: #F9FBFD;
+      padding: 40px;
+  }
+  .banner {
+      img {
+          width: 100%;
+        max-width: 1920px;
+        max-height: 640px;    
+      }
+  }
+
+  .menu {
+      position: relative;
+      display: flex;
+      .line {
+          position: absolute;
+          background: #424166;
+          height: 3px;
+          bottom:0;
+          transition: all 0.2s;
+      }
+      li {
+          display: flex;
+          align-items: center;
+          height: 30px;
+          color: #A8B2C4;
+          transition: all 0.2s;
+          &.active {
+              color: #424166;
+          }
+          &:not(:last-child) {
+              margin-right: 40px;
+          }
+      }
+  }
+  .flexSpaceBetween {
+      display: flex;
+      width: 100%;
+      justify-content: space-between;
+      padding-top: 40px;
+      margin-bottom: 60px;
+  }
+  
+
+  .databox {
+      width: 480px;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0px 8px 15px 0px rgba(149, 156, 182, 0.15);
+      border: 1px solid #EAEBF0;
+      .dataTitle {
+          display: flex;
+          align-items: center;
+          background-color: #F9FBFD;
+          justify-content: center;
+          border-bottom: 1px solid #EAEBF0;
+          div {
+              display: flex;
+              align-items: center;
+              width: 50%;
+              height: 61px;
+              justify-content: center;
+              &.menuActive2 {
+                  background: #A4FED8;
+              }
+          }
+      }
+      
+      .dataTitle {
+          height: 61px;
+      }
+      .databoxCont{
+          display: flex;
+          flex-direction: column;
+          height: 171px;
+          background: #fff;
+          padding:  0 40px;
+          li {
+             display: flex;
+             justify-content: space-between;
+             margin: 32px 0 0 0;
+             div {
+                 display: flex;
+                 width: 33.3%;
+                 &:nth-child(1) {
+                  color: #A8B2C4;
+               }
+                 &:nth-child(2) {
+                  color: #424166;
+                   display: flex;
+                   justify-content: center;
+                 }
+                 &:nth-child(3) {
+                  color: #18C784;
+                  display: flex;
+                  justify-content: flex-end;
+                }
+              }
+             
+          }
+      }
+
+      
+  }
+
+  .net_inflow {
+      justify-content: space-between;
+      width: 100%;
+      background: #fff;
+      margin-bottom: 60px;
+      border: 1px solid #EAEBF0;
+      box-shadow: 0px 8px 15px 0px rgba(149, 156, 182, 0.15);
+      .sectionCont {
+          padding: 20px;
+      }
+      .dateRange {
+          display: flex;
+          li {
+              display: flex;
+              align-items: center;
+              font-size: 14px;
+              color: #424166;
+              width: 65px;
+              height: 38px;
+              border-radius: 4px;
+              justify-content: center;
+              cursor: pointer;
+              &.dateRangeAc {
+                 background:#81FCCD;
+              }
+          }
+      }
+
+      .topSetting {
+
+          display: flex;
+
+      }
+  }
+
+  .inflow_all {
+      display: flex;
+      width: 100%;
+      justify-content: space-between;
+      .inflow_item {
+          width: 480px;  
+          background: #fff;
+          border-radius: 4px;
+          box-shadow: 0px 8px 15px 0px rgba(149, 156, 182, 0.15);
+          border: 1px solid #EAEBF0;
+          .sectionCont {
+              padding: 20px;
+          } 
+      }
+
+      .dateRange {
+          display: flex;
+          width: 320px;
+          height: 38px;
+          background: #F8FAFA; 
+          border-radius: 4px;
+          border: 1px solid #EDEDF1;
+          justify-content: space-between;
+          padding: 0 5px;
+          align-items: center;
+          li {
+              display: flex;
+              align-items: center;
+              font-size: 14px;
+              color: #424166;
+              width: 45px;
+              height: 28px;
+              border-radius: 4px;
+              justify-content: center;
+              cursor: pointer;
+              &.dateRangeAc {
+                 background:#81FCCD;
+              }
+          }
+      }
+  }
+
+  
+
+ 
+.topSetting {
+  display: flex;
+  justify-content: space-between;
+}
+  .sectionTitle {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: "TT Octosquares W05 Black";
+      img {
+          margin-left: 10px;
+      }
+  }
+}
+
+.holderBox {
+   height: 400px;
+}
