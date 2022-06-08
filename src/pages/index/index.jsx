@@ -29,6 +29,7 @@ class Main extends React.Component {
       holders_setting: { type: 'multi', height: 420, doSize:'20px', typelist: [{ name: 'GMT', type: 'line', startColor: '#81FCCD', endColor: 'rgba(96, 255, 132, 0)', areaStyle: true}, { name: 'GST', type: 'line', startColor: '#58CFFF', endColor: 'rgba(88, 207, 255, 0)', areaStyle: true }] },
       traffic_setting: { type: 'multi', barWidth: 38, height: 400, doSize:'10px',typelist: [{ name: 'IP', type: 'bar', startColor: '#58CFFF' }, { name: 'PV', type: 'bar', startColor: '#84FCCC' }, { name: 'USERS', type: 'line', startColor: '#F8C05E' }] },
       googlesearch_setting: { type: 'bar', barWidth: 38, height: 230 },
+      social_media_setting: { type: 'multi', height: 420, doSize:'20px', typelist: [{ name: 'Twitter', type: 'line', startColor: '#58CFFF', endColor: 'rgba(88, 207, 255, 0)', areaStyle: true}, { name: 'Discord', type: 'line', startColor: '#81FCCD', endColor: 'rgba(96, 255, 132, 0)', areaStyle: true },{ name: 'Telegram', type: 'line', startColor: '#F8C05E', endColor: 'rgba(96, 255, 132, 0)', areaStyle: true }] },
       net_inflow_wid: 100,
       inflow_item_wid: 38,
       allStepnFlowData: null,
@@ -47,6 +48,13 @@ class Main extends React.Component {
         realDate: []
       },
       googlesearch_json: { min: null, series: [], xAxis: [], realDate: [] },
+      social_media_json: {
+        Twitter: [],
+        Discord: [],
+        Telegram: [],
+        xAxis: [],
+        realDate: []
+      },
       inflowList: [{ title: 'Inflow Of SOL', type: 'inflow_sol' }, { title: 'Inflow Of GST', type: 'inflow_gst' }, { title: 'Inflow Of GMT', type: 'inflow_gmt' }],
       marketcap: {
         SOL: {}, // 后面加入yyyy-mm-dd_hh-mm为key的价格
@@ -77,12 +85,34 @@ class Main extends React.Component {
     this.netFlowShow(dateRange, defaultIndex);
     this.stepnHolders(dateRange, defaultIndex);
     this.stepn(dateRange, defaultIndex);
+    this.getTwitter(dateRange, defaultIndex);
     this.setState({ width: this.refs["menu0"].clientWidth });
   }
+
+  async getTwitter(dateRange,defaultIndex){
+    let res = await home.getTwitter()
+    console.log(res)
+    if(!(res && res.data)) return
+    let arr = []
+     Object.keys(res.data).forEach(item=>{
+      arr= [...arr,{date:item,value:res.data[item]}]
+     })
+    for(let i=0; arr.length;i++) {
+      let item = arr[i];
+      let dateItem = item['date'].replace(/(\d{4})-*(\d{2})-*(\d{2})/, '$1-$2-$3 23:59:59');
+      let itemTime = new Date(+new Date(dateItem));
+      if (dateRange.endTime && +itemTime > dateRange.endTime) break;
+      if (!dateRange.startTime || (dateRange.startTime && +itemTime > dateRange.startTime)) {
+        social_media_json.Twitter.push(item['value'])
+ 
+      }
+    }
+ 
+  }
+
   async stepn(dateRange, defaultIndex) {
     let { traffic_json } = this.state
     let res = await home.stepn()
- 
     if (res && res.data) {
       for (let i in traffic_json) {
         traffic_json[i] = []
@@ -352,11 +382,11 @@ class Main extends React.Component {
   render() {
     let { net_flow_json, holders_json,
       left, width, menu1, menuAcInd1, menuAcInd2, menu2, timeRange, data, dateRangeList,
-      net_inflow_status, holders_status,
+      net_inflow_status, holders_status,social_media_status,
       net_inflow_setting, inflow_setting, holders_setting,
       traffic_status, googlesearch_status,
-      traffic_json, googlesearch_json,
-      traffic_setting, googlesearch_setting,
+      traffic_json, googlesearch_json, social_media_json,
+      traffic_setting, googlesearch_setting, social_media_setting,
       inflowList,
     } = this.state;
     return (
@@ -424,7 +454,6 @@ class Main extends React.Component {
                     {dateRangeList.map((item, index) => {
                       return <li key={index} onClick={e => this.changeDateRange(index, 'net_inflow')} className={net_inflow_status === index ? styl.dateRangeAc : ''}>{item}</li>
                     })}
-
                   </ul>
                 </div>
                 <EchartComp ref={this.net_inflow_ref} status={net_inflow_status} data={net_flow_json.inflow_net} echartSetting={net_inflow_setting} ></EchartComp>
@@ -466,7 +495,6 @@ class Main extends React.Component {
             </div>
 
             <div className={styl.doublemodule}>
-
               <div className={styl.net_inflow}>
                 <div className={styl.sectionCont}>
                   <div className={styl.topSetting}>
@@ -490,10 +518,25 @@ class Main extends React.Component {
                       })}
                     </ul>
                   </div>
-                  {/* <EchartComp ref={this.googlesearch_ref} status={googlesearch_status} data={googlesearch_json} echartSetting={googlesearch_setting}></EchartComp> */}
+                  <EchartComp ref={this.googlesearch_ref} status={googlesearch_status} data={googlesearch_json} echartSetting={googlesearch_setting}></EchartComp>
                 </div>
               </div>
             </div>
+
+            <div className={styl.net_inflow}>
+              <div className={styl.sectionCont}>
+                <div className={styl.topSetting}>
+                  <div onClick={e => this.download("socialMedia")} className={styl.sectionTitle}>Social Media<img src={camera} /></div>
+                  <ul className={styl.dateRange}>
+                    {dateRangeList.map((item, index) => {
+                      return <li key={index} onClick={e => this.changeDateRange(index, 'socialMedia')} className={social_media_status === index ? styl.dateRangeAc : ''}>{item}</li>
+                    })}
+                  </ul>
+                </div>
+                <EchartComp ref={this.social_media_ref} status={social_media_status} data={social_media_json} echartSetting={social_media_setting} ></EchartComp>
+              </div>
+            </div>
+
           </div>
         </div>
 

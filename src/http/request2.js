@@ -2,7 +2,7 @@ import axios from 'axios'
 
 // 创建axios实例
 const https = axios.create({
-    baseURL: 'http://43.129.181.196',
+    baseURL: 'http://1.117.86.81',
     timeout: 5000
 })
 

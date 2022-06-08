@@ -1,9 +1,9 @@
 import request from '@/http/request'
-
+import request2 from '@/http/request2'
 
 export const stepn = (params) => {
   return request({
-    url: 'stepn',
+    url: '/stepn',
     method: 'get',
     params: params
   })
@@ -34,11 +34,22 @@ export const stepn_holders = (params) => {
   })
 }
 
+export const getTwitter = (params) => {
+  return request2({
+    url: 'getTrends/getTwitter?coin=GMT',
+    method: 'get',
+    data: params
+  })
+}
+
  
+
+
 
 export default {
   stepn,
   stepnFlow,
   stepnPriceMarketcap,
-  stepn_holders
+  stepn_holders,
+  getTwitter
 }
