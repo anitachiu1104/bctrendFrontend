@@ -82,7 +82,11 @@ class Main extends React.Component {
   async stepn(dateRange, defaultIndex) {
     let { traffic_json } = this.state
     let res = await home.stepn()
+ 
     if (res && res.data) {
+      for (let i in traffic_json) {
+        traffic_json[i] = []
+      }
       for (let i = 0; i < res.data.length; i++) {
         let item = res.data[i];
         let dateItem = item[0].replace(/(\d{4})-*(\d{2})-*(\d{2})/, '$1-$2-$3 23:59:59');
@@ -334,6 +338,8 @@ class Main extends React.Component {
       this.stepnFlow(dateRange, type, timeIndex);
     } else if (type === 'holders') {
       this.stepnHolders(dateRange, timeIndex)
+    } else if(type==='traffic') {
+      this.stepn(dateRange, timeIndex)
     }
 
   }

@@ -85,13 +85,13 @@ export let echart = {
                 containLabel: true
             },
             dataZoom: [{
-                type: 'slider',
-                show: data.xAxis.length < 15 ? false : true,
-                // 数据窗口范围的起始百分比
+                show: true,
                 start: 0,
-                // 数据窗口范围的结束百分比
-                end: data.xAxis.length < 15 ? 0 : 50,
-                zoomLock: true
+                end: data.xAxis.length < 15 ? 0 : 50
+            },{
+                type: 'inside',
+                start: 0,
+                end: data.xAxis.length < 15 ? 0 : 50
             }],
             xAxis: {
                 type: 'category',
@@ -103,7 +103,9 @@ export let echart = {
                 boundaryGap: [0, '100%']
             },
             legend: {
-                data: ['GMT', 'GST']
+                data: echartSetting.typelist.map(e=>{
+                    return e.name
+                })
             },
             series: series
         }
