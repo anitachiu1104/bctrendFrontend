@@ -9,17 +9,16 @@ function setEntry() {
     const ret = file.match(/^\.\/src\/pages\/(\S*)\/index\.jsx$/)
     if (ret) {
       entry[ret[1]] = {
-        import: file,
-        dependOn: 'react_vendors',
+        import: file
       }
     }
   })
 
-  // 拆分react依赖
-  entry['react_vendors'] = {
-    import: ['react', 'react-dom'],
-    filename: '_common/[name].js'
-  }
+  // // 拆分react依赖
+  // entry['react_vendors'] = {
+  //   import: ['react', 'react-dom'],
+  //   filename: '_common/[name].js'
+  // }
 
   return entry
 }
