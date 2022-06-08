@@ -424,6 +424,20 @@ class Main extends React.Component {
                 <EchartComp ref={this.holders_ref} status={holders_status} data={holders_json} echartSetting={holders_setting} ></EchartComp>
               </div>
             </div>
+            <div className={styl.net_inflow}>
+              <div className={styl.sectionCont}>
+                <div className={styl.topSetting}>
+                  <div onClick={e => this.download("holders")} className={styl.sectionTitle}>Traffic<img src={camera} /></div>
+                  <ul className={styl.dateRange}>
+                    {dateRangeList.map((item, index) => {
+                      return <li key={index} onClick={e => this.changeDateRange(index, 'holders')} className={holders_status === index ? styl.dateRangeAc : ''}>{item}</li>
+                    })}
+
+                  </ul>
+                </div>
+                <EchartComp ref={this.holders_ref} status={holders_status} data={holders_json} echartSetting={holders_setting} ></EchartComp>
+              </div>
+            </div>
 
           </div>
         </div>
