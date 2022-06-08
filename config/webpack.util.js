@@ -40,7 +40,7 @@ function setHtmlPlugin() {
     if (ret) {
       const name = ret[1]
       options.push(new HtmlWebpackPlugin({
-        filename: `${name}/index.html`,
+        filename: `${name}.html`,
         template: getTemplate(name),
         chunks: ['react_vendors',name]
       }))
