@@ -36,14 +36,18 @@ export let echart = {
                 max: data.max,
                 min: data.min
             },
-            dataZoom: [{
-                type: 'slider',
-                // 数据窗口范围的起始百分比
-                start: 0,
-                // 数据窗口范围的结束百分比
-                end: 600/data.xAxis.length,
-                zoomLock: true
-            }],
+            dataZoom: [
+                {
+                  show: true,
+                  start: 0,
+                  end: 600/data.xAxis.length,
+                },
+                {
+                  type: 'inside',
+                  start: 0,
+                  end: 600/data.xAxis.length,
+                }
+              ],
             series: [
                 {
                     data: data.series,
@@ -81,6 +85,7 @@ export let echart = {
                 top: '30',
                 containLabel: true
             },
+
             dataZoom: [{
                 type: 'slider',
                 show: data.xAxis.length<15?false:true,

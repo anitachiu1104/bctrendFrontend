@@ -409,12 +409,11 @@ class Main extends React.Component {
                   </div>
                 </div>
               })}
-
             </div>
             <div className={styl.net_inflow}>
               <div className={styl.sectionCont}>
                 <div className={styl.topSetting}>
-                  <div onClick={e => this.download("holders")} className={styl.sectionTitle}>Net Inflow<img src={camera} /></div>
+                  <div onClick={e => this.download("holders")} className={styl.sectionTitle}>Holders<img src={camera} /></div>
                   <ul className={styl.dateRange}>
                     {dateRangeList.map((item, index) => {
                       return <li key={index} onClick={e => this.changeDateRange(index, 'holders')} className={holders_status === index ? styl.dateRangeAc : ''}>{item}</li>
