@@ -1,5 +1,13 @@
 import request from '@/http/request'
 
+
+export const stepn = (params) => {
+  return request({
+    url: 'stepn',
+    method: 'get',
+    params: params
+  })
+}
  
 export const stepnFlow = (params) => {
   return request({
@@ -29,6 +37,7 @@ export const stepn_holders = (params) => {
  
 
 export default {
+  stepn,
   stepnFlow,
   stepnPriceMarketcap,
   stepn_holders

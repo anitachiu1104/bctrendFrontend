@@ -1,7 +1,6 @@
 
 export let echart = {
     bar: (data, echartSetting) => {
-        console.log("bar", data)
         return {
             tooltip: {
                 trigger: 'axis',
@@ -38,16 +37,16 @@ export let echart = {
             },
             dataZoom: [
                 {
-                  show: true,
-                  start: 0,
-                  end: 600/data.xAxis.length,
+                    show: true,
+                    start: 0,
+                    end: 600 / data.xAxis.length,
                 },
                 {
-                  type: 'inside',
-                  start: 0,
-                  end: 600/data.xAxis.length,
+                    type: 'inside',
+                    start: 0,
+                    end: 600 / data.xAxis.length,
                 }
-              ],
+            ],
             series: [
                 {
                     data: data.series,
@@ -58,7 +57,7 @@ export let echart = {
         }
 
     },
-    line: (data,series,echartSetting) => {
+    multi: (data, series, echartSetting) => {
         return {
             tooltip: {
                 trigger: 'axis',
@@ -70,12 +69,12 @@ export let echart = {
                     type: 'shadow'
                 },
                 formatter: function (params, index) {
-                    let params_0 = params[0],
-                        params_1 = params[1];
-                    return '<div style="width: 217px"><div style="margin-bottom:16px">'+data.realDate[params_0.dataIndex] + '</div>' +
-                        '<div style="display:flex;align-items:center;margin-bottom:14px" >'+'<div style="background:'+params_0.color+';height: 20px;width:20px;border-radius:50%;margin-right:10px"></div>'+params_0.seriesName  + ' Holders：' + params_0.data + '</div>' +
-                        '<div style="display:flex;align-items:center;margin-bottom:14px" >'+'<div style="background:'+params_1.color+';height: 20px;width:20px;border-radius:50%;margin-right:10px"></div>'+params_1.seriesName  + ' Holders：' + params_1.data + '</div>' +
-                        '</div>'
+                    let str = '<div><div style="margin-bottom:16px">' + data.realDate[params[0].dataIndex] + '</div>';
+                    params.map(item => {
+                        str += '<div style="display:flex;align-items:center;margin-bottom:14px"><div style="background:' + item.color + ';height: '+echartSetting.doSize+';width:'+echartSetting.doSize+';border-radius:50%;margin-right:10px"></div>' + item.seriesName + ' Holders：' + item.data + '</div>'
+                    })
+                    str += '</div>'
+                    return str
                 }
             },
             grid: {
@@ -85,14 +84,13 @@ export let echart = {
                 top: '30',
                 containLabel: true
             },
-
             dataZoom: [{
                 type: 'slider',
-                show: data.xAxis.length<15?false:true,
+                show: data.xAxis.length < 15 ? false : true,
                 // 数据窗口范围的起始百分比
                 start: 0,
                 // 数据窗口范围的结束百分比
-                end: data.xAxis.length<15?0:50,
+                end: data.xAxis.length < 15 ? 0 : 50,
                 zoomLock: true
             }],
             xAxis: {

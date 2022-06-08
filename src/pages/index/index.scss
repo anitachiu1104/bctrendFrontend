@@ -144,11 +144,17 @@
               }
           }
       }
-
       .topSetting {
-
           display: flex;
+      }
+  }
 
+  .doublemodule {
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+      .net_inflow {
+          width: 735px;
       }
   }
 

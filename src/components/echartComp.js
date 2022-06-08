@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactEcharts from 'echarts-for-react';
-import {echart} from '@/components/echartStyle'
-import * as echarts from 'echarts'; 
+import { echart } from '@/components/echartStyle'
+import * as echarts from 'echarts';
 class EchartComp extends React.Component {
   constructor(props) {
     super(props);
@@ -20,7 +20,6 @@ class EchartComp extends React.Component {
   }
 
   downloadPic = e => {
-    console.log(this.echarts_react)
     let echarts_instance = this.echarts_react.getEchartsInstance();
     let picInfo = echarts_instance.getDataURL({
       type: 'png',
@@ -38,40 +37,41 @@ class EchartComp extends React.Component {
 
 
   getOption(data) {
-    console.log(data)
+    // console.log(data)
     let { echartSetting } = this.props
- 
-    if(echartSetting.type ==='bar') {
-      return echart[echartSetting.type](data,echartSetting)
-    } else {
-      let series=[]
-      echartSetting.typelist.map((item,index)=>{
-        series.push({
-            name: item,
-            type: 'line',
-            symbol: 'none',
-            sampling: 'lttb',
-            itemStyle: {
-                color: echartSetting[item].startColor
+
+    if (echartSetting.type === 'bar') {
+      return echart[echartSetting.type](data, echartSetting)
+    } else if (echartSetting.type === 'multi') {
+      let series = []
+      echartSetting.typelist.map((item, index) => {
+        let series_json = {
+          name: item.name,
+          type: item.type,
+          symbol: 'none',
+          sampling: 'lttb',
+          itemStyle: {
+            color: item.startColor
+          },
+          data: data[item.name]
+        }
+        item.areaStyle?(series_json['areaStyle']={
+          color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+            {
+              offset: 0,
+              color: item.startColor
             },
-            areaStyle: {
-                color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-                  {
-                    offset: 0,
-                    color: echartSetting[item].startColor
-                  },
-                  {
-                    offset: 1,
-                    color: echartSetting[item].endColor
-                  }
-                ])
-            },
-            data: data[item]
-        }) 
+            {
+              offset: 1,
+              color: item.endColor
+            }
+          ])
+        }):null
+        series.push(series_json)
       })
-      return echart[echartSetting.type](data,series,echartSetting)
+      return echart[echartSetting.type](data, series, echartSetting)
     }
-  
+
   }
 
   onChartClick(param, echarts) {

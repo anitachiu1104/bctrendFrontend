@@ -26,7 +26,9 @@ class Main extends React.Component {
       holders_status: null,
       net_inflow_setting: { type: 'bar', barWidth: 100, height: 330 },
       inflow_setting: { type: 'bar', barWidth: 38, height: 230 },
-      holders_setting: { type: 'line', height: 420, typelist:['GMT','GST'],GST: { startColor: '#81FCCD', endColor: 'rgba(96, 255, 132, 0)' }, GMT: { startColor: '#58CFFF', endColor: 'rgba(88, 207, 255, 0)' } },
+      holders_setting: { type: 'multi', height: 420, doSize:'20px', typelist: [{ name: 'GMT', type: 'line', startColor: '#81FCCD', endColor: 'rgba(96, 255, 132, 0)', areaStyle: true}, { name: 'GST', type: 'line', startColor: '#58CFFF', endColor: 'rgba(88, 207, 255, 0)', areaStyle: true }] },
+      traffic_setting: { type: 'multi', barWidth: 38, height: 400, doSize:'10px',typelist: [{ name: 'IP', type: 'bar', startColor: '#58CFFF' }, { name: 'PV', type: 'bar', startColor: '#84FCCC' }, { name: 'USERS', type: 'line', startColor: '#F8C05E' }] },
+      googlesearch_setting: { type: 'bar', barWidth: 38, height: 230 },
       net_inflow_wid: 100,
       inflow_item_wid: 38,
       allStepnFlowData: null,
@@ -37,6 +39,14 @@ class Main extends React.Component {
         inflow_gmt: { ind: 4, min: null, max: null, series: [], xAxis: [], realDate: [] },
         inflow_net: { min: null, series: [], xAxis: [], realDate: [] }
       },
+      traffic_json: {
+        IP: [],
+        PV: [],
+        USERS: [],
+        xAxis: [],
+        realDate: []
+      },
+      googlesearch_json: { min: null, series: [], xAxis: [], realDate: [] },
       inflowList: [{ title: 'Inflow Of SOL', type: 'inflow_sol' }, { title: 'Inflow Of GST', type: 'inflow_gst' }, { title: 'Inflow Of GMT', type: 'inflow_gmt' }],
       marketcap: {
         SOL: {}, // 后面加入yyyy-mm-dd_hh-mm为key的价格
@@ -56,6 +66,8 @@ class Main extends React.Component {
     this.inflow_gst_ref = React.createRef()
     this.inflow_gmt_ref = React.createRef()
     this.holders_ref = React.createRef()
+    this.traffic_ref = React.createRef()
+    this.googlesearch_ref = React.createRef()
   }
 
   componentDidMount() {
@@ -63,8 +75,29 @@ class Main extends React.Component {
     let days = this.getDays(defaultIndex)
     let dateRange = this.getTime(days)
     this.netFlowShow(dateRange, defaultIndex);
-    this.stepnHolders(dateRange, defaultIndex)
-    this.setState({ width: this.refs["menu0"].clientWidth })
+    this.stepnHolders(dateRange, defaultIndex);
+    this.stepn(dateRange, defaultIndex);
+    this.setState({ width: this.refs["menu0"].clientWidth });
+  }
+  async stepn(dateRange, defaultIndex) {
+    let { traffic_json } = this.state
+    let res = await home.stepn()
+    if (res && res.data) {
+      for (let i = 0; i < res.data.length; i++) {
+        let item = res.data[i];
+        let dateItem = item[0].replace(/(\d{4})-*(\d{2})-*(\d{2})/, '$1-$2-$3 23:59:59');
+        let itemTime = new Date(+new Date(dateItem));
+        if (dateRange.endTime && +itemTime > dateRange.endTime) break;
+        if (!dateRange.startTime || (dateRange.startTime && +itemTime > dateRange.startTime)) {
+          traffic_json.IP.push(item[1])
+          traffic_json.PV.push(item[2])
+          traffic_json.USERS.push(item[3])
+          traffic_json.realDate.push(dateItem)
+          traffic_json.xAxis.push(dateTimeFormat(dateItem)['month_day'])
+        }
+      }
+    }
+    this.setState({ traffic_status: defaultIndex, traffic_json })
   }
 
   async netFlowShow(dateRange, defaultIndex) {
@@ -93,8 +126,6 @@ class Main extends React.Component {
           holders_json.realDate.push(_dateTimeFormat['full'])
         }
       }
-      console.log(holders_json)
-
       this.setState({ holders_json, holders_status: index })
     }
 
@@ -317,6 +348,9 @@ class Main extends React.Component {
       left, width, menu1, menuAcInd1, menuAcInd2, menu2, timeRange, data, dateRangeList,
       net_inflow_status, holders_status,
       net_inflow_setting, inflow_setting, holders_setting,
+      traffic_status, googlesearch_status,
+      traffic_json, googlesearch_json,
+      traffic_setting, googlesearch_setting,
       inflowList,
     } = this.state;
     return (
@@ -424,21 +458,36 @@ class Main extends React.Component {
                 <EchartComp ref={this.holders_ref} status={holders_status} data={holders_json} echartSetting={holders_setting} ></EchartComp>
               </div>
             </div>
-            <div className={styl.net_inflow}>
-              <div className={styl.sectionCont}>
-                <div className={styl.topSetting}>
-                  <div onClick={e => this.download("holders")} className={styl.sectionTitle}>Traffic<img src={camera} /></div>
-                  <ul className={styl.dateRange}>
-                    {dateRangeList.map((item, index) => {
-                      return <li key={index} onClick={e => this.changeDateRange(index, 'holders')} className={holders_status === index ? styl.dateRangeAc : ''}>{item}</li>
-                    })}
 
-                  </ul>
+            <div className={styl.doublemodule}>
+
+              <div className={styl.net_inflow}>
+                <div className={styl.sectionCont}>
+                  <div className={styl.topSetting}>
+                    <div onClick={e => this.download("holders")} className={styl.sectionTitle}>Traffic<img src={camera} /></div>
+                    <ul className={styl.dateRange}>
+                      {dateRangeList.map((item, index) => {
+                        return <li key={index} onClick={e => this.changeDateRange(index, 'traffic')} className={traffic_status === index ? styl.dateRangeAc : ''}>{item}</li>
+                      })}
+                    </ul>
+                  </div>
+                  <EchartComp ref={this.traffic_ref} status={traffic_status} data={traffic_json} echartSetting={traffic_setting} ></EchartComp>
                 </div>
-                <EchartComp ref={this.holders_ref} status={holders_status} data={holders_json} echartSetting={holders_setting} ></EchartComp>
+              </div>
+              <div className={styl.net_inflow}>
+                <div className={styl.sectionCont}>
+                  <div className={styl.topSetting}>
+                    <div onClick={e => this.download("holders")} className={styl.sectionTitle}>Google Search<img src={camera} /></div>
+                    <ul className={styl.dateRange}>
+                      {dateRangeList.map((item, index) => {
+                        return <li key={index} onClick={e => this.changeDateRange(index, 'googleSearch')} className={googlesearch_status === index ? styl.dateRangeAc : ''}>{item}</li>
+                      })}
+                    </ul>
+                  </div>
+                  {/* <EchartComp ref={this.googlesearch_ref} status={googlesearch_status} data={googlesearch_json} echartSetting={googlesearch_setting}></EchartComp> */}
+                </div>
               </div>
             </div>
-
           </div>
         </div>
 
