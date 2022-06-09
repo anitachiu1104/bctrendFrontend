@@ -71,8 +71,8 @@ export let echart = {
             },
             grid: {
                 left: '0',
-                right: '0',
-                bottom: '0',
+                right: '10',
+                bottom: '50',
                 top: '30',
                 containLabel: true
             },
