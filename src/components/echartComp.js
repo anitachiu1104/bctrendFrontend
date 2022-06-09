@@ -37,9 +37,8 @@ class EchartComp extends React.Component {
 
 
   getOption(data) {
-    // console.log(data)
+    console.log(data)
     let { echartSetting } = this.props
-
     if (echartSetting.type === 'bar') {
       return echart[echartSetting.type](data, echartSetting)
     } else if (echartSetting.type === 'multi') {
@@ -55,7 +54,7 @@ class EchartComp extends React.Component {
           },
           data: data[item.name]
         }
-        item.areaStyle?(series_json['areaStyle']={
+        item.areaStyle ? (series_json['areaStyle'] = {
           color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
             {
               offset: 0,
@@ -66,13 +65,15 @@ class EchartComp extends React.Component {
               color: item.endColor
             }
           ])
-        }):null
+        }) : null
         series.push(series_json)
       })
       return echart[echartSetting.type](data, series, echartSetting)
     }
 
   }
+
+
 
   onChartClick(param, echarts) {
     console.log(param)
@@ -91,7 +92,7 @@ class EchartComp extends React.Component {
         notMerge={true}
         lazyUpdate={true}
         onEvents={onEvents}
-        style={{ width: '100%', height: echartSetting.height + 'px' }}
+        style={{ height: echartSetting.height + 'px' }}
       />
     );
 

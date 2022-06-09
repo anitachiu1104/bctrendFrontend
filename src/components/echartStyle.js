@@ -19,8 +19,8 @@ export let echart = {
             },
             grid: {
                 left: '0',
-                right: '0',
-                bottom: '0',
+                right: '10',
+                bottom: '50',
                 top: '30',
                 containLabel: true
             },
@@ -37,21 +37,15 @@ export let echart = {
             },
             dataZoom: [
                 {
-                    show: true,
+                    type: 'slider',
                     start: 0,
-                    end: 600 / data.xAxis.length,
-                },
-                {
-                    type: 'inside',
-                    start: 0,
-                    end: 600 / data.xAxis.length,
+                    end: 100,
                 }
             ],
             series: [
                 {
                     data: data.series,
-                    type: 'bar',
-                    barWidth: echartSetting.barWidth
+                    type: 'bar'
                 }
             ]
         }

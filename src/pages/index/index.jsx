@@ -90,13 +90,14 @@ class Main extends React.Component {
   }
 
   async getTwitter(dateRange,defaultIndex){
+    let {social_media_json} = this.state;
     let res = await home.getTwitter()
-    console.log(res)
     if(!(res && res.data)) return
     let arr = []
      Object.keys(res.data).forEach(item=>{
       arr= [...arr,{date:item,value:res.data[item]}]
      })
+     
     for(let i=0; arr.length;i++) {
       let item = arr[i];
       let dateItem = item['date'].replace(/(\d{4})-*(\d{2})-*(\d{2})/, '$1-$2-$3 23:59:59');
@@ -104,10 +105,10 @@ class Main extends React.Component {
       if (dateRange.endTime && +itemTime > dateRange.endTime) break;
       if (!dateRange.startTime || (dateRange.startTime && +itemTime > dateRange.startTime)) {
         social_media_json.Twitter.push(item['value'])
- 
+        social_media_json.realDate.push(item['date'])
       }
     }
- 
+    this.setState({ social_media_json,social_media_status:defaultIndex })
   }
 
   async stepn(dateRange, defaultIndex) {
@@ -389,6 +390,7 @@ class Main extends React.Component {
       traffic_setting, googlesearch_setting, social_media_setting,
       inflowList,
     } = this.state;
+    let ss = {type: 'test', height: 420, doSize:'20px', typelist: [{ name: 'Twitter', type: 'line', startColor: '#58CFFF', endColor: 'rgba(88, 207, 255, 0)', areaStyle: true}, { name: 'Discord', type: 'line', startColor: '#81FCCD', endColor: 'rgba(96, 255, 132, 0)', areaStyle: true },{ name: 'Telegram', type: 'line', startColor: '#F8C05E', endColor: 'rgba(96, 255, 132, 0)', areaStyle: true }]}
     return (
       <div className={styl.home}>
         <div className={styl.cont}>
