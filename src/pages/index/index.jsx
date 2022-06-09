@@ -24,12 +24,13 @@ class Main extends React.Component {
       inflow_gst_status: null,
       inflow_gmt_status: null,
       holders_status: null,
+      telestepn_status: null,
       net_inflow_setting: { type: 'bar', barWidth: 100, height: 330 },
       inflow_setting: { type: 'bar', barWidth: 38, height: 230 },
       holders_setting: { type: 'multi', height: 420, doSize:'20px', typelist: [{ name: 'GMT', type: 'line', startColor: '#81FCCD', endColor: 'rgba(96, 255, 132, 0)', areaStyle: true}, { name: 'GST', type: 'line', startColor: '#58CFFF', endColor: 'rgba(88, 207, 255, 0)', areaStyle: true }] },
       traffic_setting: { type: 'multi', barWidth: 38, height: 400, doSize:'10px',typelist: [{ name: 'IP', type: 'bar', startColor: '#58CFFF' }, { name: 'PV', type: 'bar', startColor: '#84FCCC' }, { name: 'USERS', type: 'line', startColor: '#F8C05E' }] },
       googlesearch_setting: { type: 'bar', barWidth: 38, height: 230 },
-      social_media_setting: { type: 'multi', height: 420, doSize:'20px', typelist: [{ name: 'Twitter', type: 'line', startColor: '#58CFFF', endColor: 'rgba(88, 207, 255, 0)', areaStyle: true}, { name: 'Discord', type: 'line', startColor: '#81FCCD', endColor: 'rgba(96, 255, 132, 0)', areaStyle: true },{ name: 'Telegram', type: 'line', startColor: '#F8C05E', endColor: 'rgba(96, 255, 132, 0)', areaStyle: true }] },
+      social_media_setting: { type: 'multi', height: 420, doSize:'20px', typelist: [{ name: 'Twitter', type: 'line', startColor: '#58CFFF', endColor: 'rgba(88, 207, 255, 0)'}, { name: 'Discord', type: 'line', startColor: '#81FCCD', endColor: 'rgba(96, 255, 132, 0)' },{ name: 'Telegram', type: 'line', startColor: '#F8C05E', endColor: 'rgba(96, 255, 132, 0)' }] },
       net_inflow_wid: 100,
       inflow_item_wid: 38,
       allStepnFlowData: null,
@@ -61,7 +62,7 @@ class Main extends React.Component {
         GST: {},
         GMT: {},
       },
-      defaultIndex: 0,
+      defaultIndex: 4,
       holders_json: {
         GST: [],
         GMT: [],
@@ -85,8 +86,35 @@ class Main extends React.Component {
     this.netFlowShow(dateRange, defaultIndex);
     this.stepnHolders(dateRange, defaultIndex);
     this.stepn(dateRange, defaultIndex);
-    this.getTwitter(dateRange, defaultIndex);
+    this.socialMedia(dateRange,defaultIndex)
     this.setState({ width: this.refs["menu0"].clientWidth });
+  }
+
+  async socialMedia(dateRange,defaultIndex){
+    let {social_media_json} = this.state
+    Object.keys(social_media_json).forEach(item=>{
+      social_media_json[item] = []
+    })
+    this.telestepn(dateRange,defaultIndex)
+    this.getTwitter(dateRange,defaultIndex)
+  }
+
+  
+  async telestepn(dateRange,defaultIndex){
+    let {social_media_json} = this.state;
+    let res = await home.telestepn()
+    if(!(res && res.data)) return
+    let arr = res.data;
+    for(let i=0; i<arr.length;i++) {
+      let item = arr[i];
+      let dateItem = item[3];
+      let itemTime = new Date(dateItem);
+      if (dateRange.endTime && +itemTime > dateRange.endTime) break;
+      if (!dateRange.startTime || (dateRange.startTime && +itemTime > dateRange.startTime)) {
+        social_media_json.Telegram.push(item[1])
+      }
+    }
+    this.setState({ social_media_json,telestepn_status:defaultIndex })
   }
 
   async getTwitter(dateRange,defaultIndex){
@@ -98,13 +126,14 @@ class Main extends React.Component {
       arr= [...arr,{date:item,value:res.data[item]}]
      })
      
-    for(let i=0; arr.length;i++) {
+    for(let i=0; i<arr.length;i++) {
       let item = arr[i];
       let dateItem = item['date'].replace(/(\d{4})-*(\d{2})-*(\d{2})/, '$1-$2-$3 23:59:59');
       let itemTime = new Date(+new Date(dateItem));
       if (dateRange.endTime && +itemTime > dateRange.endTime) break;
       if (!dateRange.startTime || (dateRange.startTime && +itemTime > dateRange.startTime)) {
         social_media_json.Twitter.push(item['value'])
+        social_media_json.xAxis.push(item['date'])
         social_media_json.realDate.push(item['date'])
       }
     }
@@ -371,6 +400,8 @@ class Main extends React.Component {
       this.stepnHolders(dateRange, timeIndex)
     } else if(type==='traffic') {
       this.stepn(dateRange, timeIndex)
+    } else if(type==='socialMedia'){
+      this.socialMedia(dateRange, timeIndex)
     }
 
   }

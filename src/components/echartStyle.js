@@ -32,8 +32,6 @@ export let echart = {
             },
             yAxis: {
                 type: 'value',
-                max: data.max,
-                min: data.min
             },
             dataZoom: [
                 {
@@ -81,11 +79,11 @@ export let echart = {
             dataZoom: [{
                 show: true,
                 start: 0,
-                end: data.xAxis.length < 15 ? 0 : 50
+                end: 100
             },{
                 type: 'inside',
                 start: 0,
-                end: data.xAxis.length < 15 ? 0 : 50
+                end: 100
             }],
             xAxis: {
                 type: 'category',

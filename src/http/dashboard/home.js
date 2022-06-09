@@ -42,7 +42,14 @@ export const getTwitter = (params) => {
   })
 }
 
- 
+export const telestepn = (params) => {
+  return request({
+    url: 'telestepn',
+    method: 'get',
+    data: params
+  })
+}
+
 
 
 
@@ -51,5 +58,6 @@ export default {
   stepnFlow,
   stepnPriceMarketcap,
   stepn_holders,
-  getTwitter
+  getTwitter,
+  telestepn
 }

@@ -37,13 +37,14 @@ class EchartComp extends React.Component {
 
 
   getOption(data) {
-    console.log(data)
+    
     let { echartSetting } = this.props
     if (echartSetting.type === 'bar') {
       return echart[echartSetting.type](data, echartSetting)
     } else if (echartSetting.type === 'multi') {
       let series = []
       echartSetting.typelist.map((item, index) => {
+        console.log(data[item.name],item.name,data.xAxis)
         let series_json = {
           name: item.name,
           type: item.type,
