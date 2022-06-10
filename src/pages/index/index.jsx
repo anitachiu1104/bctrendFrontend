@@ -23,14 +23,15 @@ class Main extends React.Component {
       inflow_sol_status: null,
       inflow_gst_status: null,
       inflow_gmt_status: null,
+      googlesearch_status: null,
       holders_status: null,
       telestepn_status: null,
       net_inflow_setting: { type: 'bar', barWidth: 100, height: 330 },
       inflow_setting: { type: 'bar', barWidth: 38, height: 230 },
-      holders_setting: { type: 'multi', height: 420, doSize:'20px', typelist: [{ name: 'GMT', type: 'line', startColor: '#81FCCD', endColor: 'rgba(96, 255, 132, 0)', areaStyle: true}, { name: 'GST', type: 'line', startColor: '#58CFFF', endColor: 'rgba(88, 207, 255, 0)', areaStyle: true }] },
-      traffic_setting: { type: 'multi', barWidth: 38, height: 400, doSize:'10px',typelist: [{ name: 'IP', type: 'bar', startColor: '#58CFFF' }, { name: 'PV', type: 'bar', startColor: '#84FCCC' }, { name: 'USERS', type: 'line', startColor: '#F8C05E' }] },
+      holders_setting: { type: 'multi', height: 420, doSize: '20px', typelist: [{ name: 'GMT', type: 'line', startColor: '#81FCCD', endColor: 'rgba(96, 255, 132, 0)', areaStyle: true }, { name: 'GST', type: 'line', startColor: '#58CFFF', endColor: 'rgba(88, 207, 255, 0)', areaStyle: true }] },
+      traffic_setting: { type: 'multi', barWidth: 38, height: 400, doSize: '10px', typelist: [{ name: 'IP', type: 'bar', startColor: '#58CFFF' }, { name: 'PV', type: 'bar', startColor: '#84FCCC' }, { name: 'USERS', type: 'line', startColor: '#F8C05E' }] },
       googlesearch_setting: { type: 'bar', barWidth: 38, height: 230 },
-      social_media_setting: { type: 'multi', height: 420, doSize:'20px', typelist: [{ name: 'Twitter', type: 'line', startColor: '#58CFFF', endColor: 'rgba(88, 207, 255, 0)'}, { name: 'Discord', type: 'line', startColor: '#81FCCD', endColor: 'rgba(96, 255, 132, 0)' },{ name: 'Telegram', type: 'line', startColor: '#F8C05E', endColor: 'rgba(96, 255, 132, 0)' }] },
+      social_media_setting: { type: 'multi', height: 420, doSize: '20px', typelist: [{ name: 'Twitter', type: 'line', startColor: '#58CFFF', endColor: 'rgba(88, 207, 255, 0)' }, { name: 'Discord', type: 'line', startColor: '#81FCCD', endColor: 'rgba(96, 255, 132, 0)' }, { name: 'Telegram', type: 'line', startColor: '#F8C05E', endColor: 'rgba(96, 255, 132, 0)' }] },
       net_inflow_wid: 100,
       inflow_item_wid: 38,
       allStepnFlowData: null,
@@ -68,7 +69,27 @@ class Main extends React.Component {
         GMT: [],
         xAxis: [],
         realDate: []
-      }
+      },
+      Price: '',
+      MarketCap: '',
+      Holders: '',
+      Price_rate: '',
+      MarketCap_rate: '',
+      Holders_rate: '',
+      Price_rate_GST: '',
+      MarketCap_rate_GST: '',
+      Price_GST: '',
+      MarketCap_GST: '',
+      GM_Holders: '',
+      GS_Holders: '',
+      Twitter_value:'', 
+      Twitter_rate:'',
+      Discord_value:'',
+      Discord_rate:'',
+      Telegram_value:'',
+      Telegram_rate:'',
+      PV_rate:'',
+      IP_rate:''
     }
     this.net_inflow_ref = React.createRef()
     this.inflow_sol_ref = React.createRef()
@@ -86,26 +107,26 @@ class Main extends React.Component {
     this.netFlowShow(dateRange, defaultIndex);
     this.stepnHolders(dateRange, defaultIndex);
     this.stepn(dateRange, defaultIndex);
-    this.socialMedia(dateRange,defaultIndex)
+    this.socialMedia(dateRange, defaultIndex)
     this.setState({ width: this.refs["menu0"].clientWidth });
   }
 
-  async socialMedia(dateRange,defaultIndex){
-    let {social_media_json} = this.state
-    Object.keys(social_media_json).forEach(item=>{
+  async socialMedia(dateRange, defaultIndex) {
+    let { social_media_json } = this.state
+    Object.keys(social_media_json).forEach(item => {
       social_media_json[item] = []
     })
-    this.telestepn(dateRange,defaultIndex)
-    this.getTwitter(dateRange,defaultIndex)
+    this.telestepn(dateRange, defaultIndex)
+    this.getTwitter(dateRange, defaultIndex)
   }
 
-  
-  async telestepn(dateRange,defaultIndex){
-    let {social_media_json} = this.state;
+
+  async telestepn(dateRange, defaultIndex) {
+    let { social_media_json } = this.state;
     let res = await home.telestepn()
-    if(!(res && res.data)) return
+    if (!(res && res.data)) return
     let arr = res.data;
-    for(let i=0; i<arr.length;i++) {
+    for (let i = 0; i < arr.length; i++) {
       let item = arr[i];
       let dateItem = item[3];
       let itemTime = new Date(dateItem);
@@ -114,19 +135,22 @@ class Main extends React.Component {
         social_media_json.Telegram.push(item[1])
       }
     }
-    this.setState({ social_media_json,telestepn_status:defaultIndex })
+    let Telegram_value = arr[arr.length-1][1],
+        Telegram_rate = ((Telegram_value-arr[arr.length-2][1])/arr[arr.length-2][1])*100;
+        Telegram_rate = Math.round(Telegram_rate*100)/100;
+    this.setState({ social_media_json, telestepn_status: defaultIndex,Telegram_value,Telegram_rate })
   }
 
-  async getTwitter(dateRange,defaultIndex){
-    let {social_media_json} = this.state;
+  async getTwitter(dateRange, defaultIndex) {
+    let { social_media_json } = this.state;
     let res = await home.getTwitter()
-    if(!(res && res.data)) return
+    if (!(res && res.data)) return
     let arr = []
-     Object.keys(res.data).forEach(item=>{
-      arr= [...arr,{date:item,value:res.data[item]}]
-     })
-     
-    for(let i=0; i<arr.length;i++) {
+    Object.keys(res.data).forEach(item => {
+      arr = [...arr, { date: item, value: res.data[item] }]
+    })
+
+    for (let i = 0; i < arr.length; i++) {
       let item = arr[i];
       let dateItem = item['date'].replace(/(\d{4})-*(\d{2})-*(\d{2})/, '$1-$2-$3 23:59:59');
       let itemTime = new Date(+new Date(dateItem));
@@ -137,7 +161,10 @@ class Main extends React.Component {
         social_media_json.realDate.push(item['date'])
       }
     }
-    this.setState({ social_media_json,social_media_status:defaultIndex })
+    let Twitter_value = arr[arr.length-1]['value'],
+    Twitter_rate =(Twitter_value - arr[arr.length-2]['value'])/arr[arr.length-2]['value']*100;
+    Twitter_rate = Math.round(Twitter_rate*100)/100
+    this.setState({ social_media_json, social_media_status: defaultIndex,Twitter_rate, Twitter_value})
   }
 
   async stepn(dateRange, defaultIndex) {
@@ -161,7 +188,15 @@ class Main extends React.Component {
         }
       }
     }
-    this.setState({ traffic_status: defaultIndex, traffic_json })
+    let _data = res.data;
+    let IP = _data[_data.length-1][1],
+    PV = _data[_data.length-1][2],
+    PV_rate = (PV-_data[_data.length-2][2])/_data[_data.length-2][2]*100,
+    IP_rate = (IP-_data[_data.length-2][1])/_data[_data.length-2][1]*100;
+    PV = Math.round(PV*100)/100;
+    PV_rate = Math.round(PV_rate*100)/100;
+    IP_rate = Math.round(IP_rate*100)/100;
+    this.setState({ traffic_status: defaultIndex, traffic_json,IP,PV, PV_rate,IP_rate })
   }
 
   async netFlowShow(dateRange, defaultIndex) {
@@ -171,6 +206,7 @@ class Main extends React.Component {
   checkIsOverDate(latestData) {
     return +new Date() - (+new Date(latestData) - 8 * 60 * 60 * 1000) >= 59 * 60 * 1000
   }
+
   async stepnHolders(dateRange, index) {
     let { holders_json } = this.state;
     let res = await home.stepn_holders()
@@ -178,6 +214,11 @@ class Main extends React.Component {
       holders_json[i] = []
     }
     if (res && res.data) {
+      let Holders = this.getDataForColumn('Holders', res.data)
+      let _GM_Holders = (Holders['GM_Holders'][0] - Holders['GM_Holders'][1])/Holders['GM_Holders'][1]*100,
+          _GS_Holders = (Holders['GS_Holders'][0] - Holders['GS_Holders'][1])/Holders['GS_Holders'][1]*100,
+          GM_Holders = Number(Math.round(_GM_Holders*100)/100),
+          GS_Holders = Number(Math.round(_GS_Holders*100)/100);
       for (let i = 0; i < res.data.length; i++) {
         let item = res.data[i];
         let itemTime = new Date(+new Date(item[4]) - 8 * 60 * 60 * 1000);
@@ -190,7 +231,7 @@ class Main extends React.Component {
           holders_json.realDate.push(_dateTimeFormat['full'])
         }
       }
-      this.setState({ holders_json, holders_status: index })
+      this.setState({ holders_json, holders_status: index,GM_Holders,GS_Holders, Holders_GM_value:Holders['GM_Holders'][0], Holders_GS_value:Holders['GS_Holders'][0]})
     }
 
   }
@@ -270,13 +311,68 @@ class Main extends React.Component {
     return net_flow_json
   }
 
+  getDataForColumn(column, data) {
+    let k = 0
+    let returnData = { Price: [], MarketCap: [], GM_Holders: [], GS_Holders: [] }, yesterDayTime;
+    for (let i = data.length - 1; i > 0; i--) {
+      if (['GMT', 'GST'].includes(column) && data[i][0] === column) {
+        if (k === 0) {
+          returnData['Price'].push(data[i][1]);
+          returnData['MarketCap'].push(data[i][1]);
+          yesterDayTime = dateTimeFormat(new Date(+new Date(data[i][5]) - 24 * 60 * 60 * 1000))['full'];
+          k++
+        } else if (data[i][5] === yesterDayTime) {
+          returnData['Price'].push(data[i][1]);
+          returnData['MarketCap'].push(data[i][1]);
+          break;
+        }
+      } else if (['Holders'].includes(column)) {
+        if (k === 0) {
+          returnData['GM_Holders'].push(data[i][2]);
+          returnData['GS_Holders'].push(data[i][0]);
+          k++      
+        } else if (k===1) {
+          returnData['GM_Holders'].push(data[i][2]);
+          returnData['GS_Holders'].push(data[i][0]);
+          break;
+        }
+      }
+    }
+    return returnData
+  }
+
   async netFlow(dateRange, net_flow_json, timeIndex) {
     let { allStepnFlowData, stepnPriceMarketcapData } = this.state
     let isOverDate = this.checkIsOverDate(allStepnFlowData[allStepnFlowData.length - 1][6])
-    let res;
+    let res, Price_rate, MarketCap_rate, Price, MarketCap, Price_rate_GST, MarketCap_rate_GST, Price_GST, MarketCap_GST,returnData,returnData_GST;
     if (!stepnPriceMarketcapData || isOverDate) {
       res = await home.stepnPriceMarketcap()
-      this.setState({ stepnPriceMarketcapData: res })
+      if (res && res.data.length) {
+        returnData = this.getDataForColumn('GMT', res.data),
+        Price_rate = (returnData['Price'][0] - returnData['Price'][1]) / returnData['Price'][1] * 100,
+        MarketCap_rate = (returnData['MarketCap'][0] - returnData['MarketCap'][1]) / returnData['MarketCap'][1] * 100,
+        Price = returnData['Price'][0],
+        MarketCap = returnData['MarketCap'][0];
+
+        returnData_GST = this.getDataForColumn('GST', res.data),
+        Price_rate_GST = (returnData_GST['Price'][0] - returnData_GST['Price'][1]) / returnData_GST['Price'][1] * 100,
+        Price_GST = returnData_GST['Price'][0],
+        MarketCap_rate_GST = (returnData_GST['MarketCap'][0] - returnData_GST['MarketCap'][1]) / returnData_GST['MarketCap'][1] * 100,
+        MarketCap_GST = returnData_GST['MarketCap'][0];
+
+        Price_rate = Number(Math.round(Price_rate*100)/100),
+        MarketCap_rate = Number(Math.round(MarketCap_rate*100)/100);
+
+        Price = Number(Math.round(Price*100)/100),
+        MarketCap = Number(Math.round(MarketCap*100)/100);
+
+        Price_rate_GST = Number(Math.round(Price_rate_GST*100)/100),
+        Price_GST = Number(Math.round(Price_GST*100)/100);
+
+        MarketCap_rate_GST = Number(Math.round(MarketCap_rate_GST*100)/100),
+        MarketCap_GST = Number(Math.round(MarketCap_GST*100)/100);
+      }
+      this.setState({ stepnPriceMarketcapData: res, Price_rate, MarketCap_rate, Price, MarketCap, Price_rate_GST, MarketCap_rate_GST, Price_GST, MarketCap_GST })
     } else {
       res = stepnPriceMarketcapData
     }
@@ -398,9 +494,9 @@ class Main extends React.Component {
       this.stepnFlow(dateRange, type, timeIndex);
     } else if (type === 'holders') {
       this.stepnHolders(dateRange, timeIndex)
-    } else if(type==='traffic') {
+    } else if (type === 'traffic') {
       this.stepn(dateRange, timeIndex)
-    } else if(type==='socialMedia'){
+    } else if (type === 'socialMedia') {
       this.socialMedia(dateRange, timeIndex)
     }
 
@@ -414,14 +510,22 @@ class Main extends React.Component {
   render() {
     let { net_flow_json, holders_json,
       left, width, menu1, menuAcInd1, menuAcInd2, menu2, timeRange, data, dateRangeList,
-      net_inflow_status, holders_status,social_media_status,
+      net_inflow_status, holders_status, social_media_status,
       net_inflow_setting, inflow_setting, holders_setting,
       traffic_status, googlesearch_status,
       traffic_json, googlesearch_json, social_media_json,
       traffic_setting, googlesearch_setting, social_media_setting,
       inflowList,
+      Price, Price_rate,
+      MarketCap, MarketCap_rate,
+      Holders_GM_value, Holders_GS_value,
+      Price_GST, Price_rate_GST,
+      MarketCap_GST, MarketCap_rate_GST,
+      GM_Holders, GS_Holders,
+      Twitter_value,Twitter_rate,Discord_value,Discord_rate,Telegram_value,Telegram_rate,
+      IP,IP_rate,PV,PV_rate,
     } = this.state;
-    let ss = {type: 'test', height: 420, doSize:'20px', typelist: [{ name: 'Twitter', type: 'line', startColor: '#58CFFF', endColor: 'rgba(88, 207, 255, 0)', areaStyle: true}, { name: 'Discord', type: 'line', startColor: '#81FCCD', endColor: 'rgba(96, 255, 132, 0)', areaStyle: true },{ name: 'Telegram', type: 'line', startColor: '#F8C05E', endColor: 'rgba(96, 255, 132, 0)', areaStyle: true }]}
+    let ss = { type: 'test', height: 420, doSize: '20px', typelist: [{ name: 'Twitter', type: 'line', startColor: '#58CFFF', endColor: 'rgba(88, 207, 255, 0)', areaStyle: true }, { name: 'Discord', type: 'line', startColor: '#81FCCD', endColor: 'rgba(96, 255, 132, 0)', areaStyle: true }, { name: 'Telegram', type: 'line', startColor: '#F8C05E', endColor: 'rgba(96, 255, 132, 0)', areaStyle: true }] }
     return (
       <div className={styl.home}>
         <div className={styl.cont}>
@@ -446,11 +550,16 @@ class Main extends React.Component {
                     return <div className={menuAcInd2 === index ? styl.menuActive2 : null} key={index} onClick={e => this.handleClick(e, index, 'menu2')} >{item}</div>
                   })}
                 </div>
-                <ul className={styl.databoxCont}>
-                  <li><div>Price</div><div>$6.24</div><div>+6.21%</div></li>
-                  <li><div>Market Cap</div><div>$66,275,457</div><div>+6.21%</div></li>
-                  <li><div>Holders</div><div>5,457</div><div>+6.21%</div></li>
-                </ul>
+                {menuAcInd2 === 0 ? <ul className={styl.databoxCont}>
+                  <li><div>Price</div><div>${Price}</div><div>+{Price_rate}%</div></li>
+                  <li><div>Market Cap</div><div>${MarketCap}</div><div>+{MarketCap_rate}%</div></li>
+                  <li><div>Holders</div><div>${Holders_GM_value}</div><div>+{GM_Holders}%</div></li>
+                </ul> :
+                  <ul className={styl.databoxCont} >
+                    <li><div>Price</div><div>${Price_GST}</div><div>+{Price_rate_GST}%</div></li>
+                    <li><div>Market Cap</div><div>${MarketCap_GST}</div><div>+{MarketCap_rate_GST}%</div></li>
+                    <li><div>Holders</div><div>${Holders_GS_value}</div><div>+{GS_Holders}%</div></li>
+                  </ul>}
               </div>
 
               <div className={styl.databox}>
@@ -458,22 +567,19 @@ class Main extends React.Component {
                   Social Media Followers
                 </div>
                 <ul className={styl.databoxCont}>
-                  <li><div>Price</div><div>$6.24</div><div>+6.21%</div></li>
-                  <li><div>Market Cap</div><div>$66,275,457</div><div>+6.21%</div></li>
-                  <li><div>Holders</div><div>5,457</div><div>+6.21%</div></li>
+                  <li><div>Twitter</div><div>${Twitter_value}</div><div>+{Twitter_rate}%</div></li>
+                  <li><div>Discord</div><div>${Discord_value}</div><div>+{Discord_rate}%</div></li>
+                  <li><div>Telegram</div><div>${Telegram_value}</div><div>+{Telegram_rate}%</div></li>
                 </ul>
-
               </div>
-
-
               <div className={styl.databox}>
                 <div className={styl.dataTitle}>
                   Users
                 </div>
                 <ul className={styl.databoxCont}>
-                  <li><div>Price</div><div>$6.24</div><div>+6.21%</div></li>
-                  <li><div>Market Cap</div><div>$66,275,457</div><div>+6.21%</div></li>
-                  <li><div>Holders</div><div>5,457</div><div>+6.21%</div></li>
+                  <li><div>IP</div><div>${IP}</div><div>+{IP_rate}%</div></li>
+                  <li><div>PV</div><div>${PV}</div><div>+{PV_rate}%</div></li>
+                  <li><div>Users</div><div>5,457</div><div>+6.21%</div></li>
                 </ul>
 
               </div>
