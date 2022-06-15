@@ -319,9 +319,10 @@ class Main extends React.Component {
         if (k === 0) {
           returnData['Price'].push(data[i][1]);
           returnData['MarketCap'].push(data[i][1]);
-          yesterDayTime = dateTimeFormat(new Date(+new Date(data[i][5]) - 24 * 60 * 60 * 1000))['full'];
+          yesterDayTime = dateTimeFormat(new Date(+new Date(data[i][5]) - 24 * 60 * 60 * 1000))['full'].replace(/(\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:)\d{2}/,'$1');
+          yesterDayTime = new RegExp(yesterDayTime) 
           k++
-        } else if (data[i][5] === yesterDayTime) {
+        } else if (yesterDayTime.test(data[i][5])) {
           returnData['Price'].push(data[i][1]);
           returnData['MarketCap'].push(data[i][1]);
           break;
@@ -502,6 +503,9 @@ class Main extends React.Component {
 
   }
 
+  showPop(){
+
+  }
 
   download = (type) => {
     this[type + "_ref"].current.downloadPic();
@@ -524,6 +528,7 @@ class Main extends React.Component {
       GM_Holders, GS_Holders,
       Twitter_value,Twitter_rate,Discord_value,Discord_rate,Telegram_value,Telegram_rate,
       IP,IP_rate,PV,PV_rate,
+      marketcap
     } = this.state;
     let ss = { type: 'test', height: 420, doSize: '20px', typelist: [{ name: 'Twitter', type: 'line', startColor: '#58CFFF', endColor: 'rgba(88, 207, 255, 0)', areaStyle: true }, { name: 'Discord', type: 'line', startColor: '#81FCCD', endColor: 'rgba(96, 255, 132, 0)', areaStyle: true }, { name: 'Telegram', type: 'line', startColor: '#F8C05E', endColor: 'rgba(96, 255, 132, 0)', areaStyle: true }] }
     return (
@@ -604,7 +609,7 @@ class Main extends React.Component {
                 return <div key={index} className={styl.inflow_item}>
                   <div className={styl.sectionCont}>
                     <div className={styl.topSetting}>
-                      <div onClick={e => this.download(item.type)} className={styl.sectionTitle}>{item.title}<img src={camera} /></div>
+                      <div className={styl.sectionTitle} onClick={e=>this.showPop()}>{item.title}<img src={camera} onClick={e => this.download(item.type)} /></div>
 
                       <ul className={styl.dateRange}>
                         {dateRangeList.map((dateItem, dateIndex) => {
@@ -678,7 +683,25 @@ class Main extends React.Component {
 
           </div>
         </div>
-
+        <div>
+          <div>Inflow Of Token</div>
+          <div className={styl.inflow_item}>
+                  <div className={styl.sectionCont}>
+                    <div className={styl.topSetting}>
+                      {Object.keys(marketcap).map((item,index)=>{
+                        return <div key={index} className={styl.sectionTitle} onClick={e=>this.showPop()}>{item}<img src={camera} onClick={e => this.download(item.type)} /></div>
+                      })}
+                      <ul className={styl.dateRange}>
+                        {dateRangeList.map((item, dateIndex) => {
+                          return <li key={dateIndex} onClick={e => this.changeDateRange(dateIndex, item.type)} className={this.state[item.type + '_status'] === dateIndex ? styl.dateRangeAc : ''}>
+                            {item}</li>
+                        })}
+                      </ul>
+                    </div>
+                    {/* <EchartComp ref={this[item.type + '_ref']} status={this.state[item.type + '_status']} data={net_flow_json[item.type]} echartSetting={inflow_setting} ></EchartComp> */}
+                  </div>
+            </div>
+        </div>
       </div>
     );
   }
